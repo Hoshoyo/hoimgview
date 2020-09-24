@@ -28,7 +28,9 @@ typedef struct {
 typedef struct {
     float x;
     float y;
+    float xdiff, ydiff;
     Input_Mouse_Button button[16];
+    double scroll_x, scroll_y;
 } Input_Mouse_State;
 
 typedef struct {
@@ -140,8 +142,18 @@ key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
 void
 cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+    istate.mouse.xdiff = (float)xpos - istate.mouse.x;
+    istate.mouse.ydiff = (float)ypos - istate.mouse.y;
+    printf("%f %f\n", istate.mouse.xdiff, istate.mouse.ydiff);
     istate.mouse.x = (float)xpos;
     istate.mouse.y = (float)ypos;
+}
+
+void
+scroll_callback(GLFWwindow* window, double xoff, double yoff)
+{
+    istate.mouse.scroll_x = xoff;
+    istate.mouse.scroll_y = yoff;
 }
 
 void input_set_callbacks(void* glfw_window) {
@@ -151,6 +163,7 @@ void input_set_callbacks(void* glfw_window) {
     glfwSetWindowSizeCallback(glfw_window, window_size_callback);
     glfwSetWindowPosCallback(glfw_window, window_pos_callback);
     glfwSetCharCallback(glfw_window, window_character_callback);
+    glfwSetScrollCallback(glfw_window, scroll_callback);
 }
 
 int input_key_state(int key) {
@@ -218,4 +231,11 @@ vec2 input_mouse_pressed_at(int button) {
 
 vec2 input_mouse_released_at(int button) {
     return (vec2){istate.mouse.button[button].x_release, istate.mouse.button[button].y_release};
+}
+
+vec2 input_mouse_scroll_handle() {
+    vec2 res = (vec2){istate.mouse.scroll_x, istate.mouse.scroll_y};
+    istate.mouse.scroll_x = 0.0f;
+    istate.mouse.scroll_y = 0.0f;
+    return res;
 }

@@ -34,5 +34,6 @@ int input_mouse_event_release(int button, vec2* at);
 vec2 input_mouse_pressed_at(int button);
 vec2 input_mouse_released_at(int button);
 int input_key_handle_event(int key);
+vec2 input_mouse_scroll_handle();
 
 extern Command command;

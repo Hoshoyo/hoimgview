@@ -104,6 +104,7 @@ void render(Hobatch_Context* ctx, int ww, int wh)
 
     if(!command.running)
     {
+        double scroll_y = input_mouse_scroll_handle().y;
         if(input_key_handle_event('L') > 0)
         {
             set_tex_linear();
@@ -120,37 +121,42 @@ void render(Hobatch_Context* ctx, int ww, int wh)
             float sh = (float)wh / (float)g_image.height;
             g_image.scale = (sw < sh) ? sw : sh;
         }
-        if(input_key_state('='))
+        if(input_key_state('=') || scroll_y > 0.0f)
         {
-            g_image.scale *= 1.01f;
-            if(g_image.scale > 10.0f) g_image.scale = 10.0f;
+            g_image.scale *= (1.01f - scroll_y * 0.1f);
         }
-        if(input_key_state('-'))
+        
+        if(input_key_state('-') || scroll_y < 0.0f)
         {
-            g_image.scale *= 0.99f;
-            if(g_image.scale < 0.1f) g_image.scale = 0.1f;
+            g_image.scale *= (0.99f - scroll_y * 0.1f);
         }
+        if(g_image.scale < 0.1f) g_image.scale = 0.1f;
+        if(g_image.scale > 10.0f) g_image.scale = 10.0f;
+
         if(input_key_handle_event('R') > 0)
         {
             g_image.scale = 1.0f;
             g_image.x = 0.0f;
             g_image.y = 0.0f;
         }
-        if(input_key_state(GLFW_KEY_LEFT))
+
         {
-            g_image.x -= (input_key_state_mod(GLFW_KEY_LEFT, INPUT_MOD_SHIFT)) ? 1.0f : 10.0f;
-        }
-        if(input_key_state(GLFW_KEY_RIGHT))
-        {
-            g_image.x += (input_key_state_mod(GLFW_KEY_RIGHT, INPUT_MOD_SHIFT)) ? 1.0f : 10.0f;
-        }
-        if(input_key_state(GLFW_KEY_UP))
-        {
-            g_image.y += (input_key_state_mod(GLFW_KEY_UP, INPUT_MOD_SHIFT)) ? 1.0f : 10.0f;
-        }
-        if(input_key_state(GLFW_KEY_DOWN))
-        {
-            g_image.y -= (input_key_state_mod(GLFW_KEY_DOWN, INPUT_MOD_SHIFT)) ? 1.0f : 10.0f;
+            if(input_key_state(GLFW_KEY_LEFT))
+            {
+                g_image.x -= (input_key_state_mod(GLFW_KEY_LEFT, INPUT_MOD_SHIFT)) ? 1.0f : 10.0f;
+            }
+            if(input_key_state(GLFW_KEY_RIGHT))
+            {
+                g_image.x += (input_key_state_mod(GLFW_KEY_RIGHT, INPUT_MOD_SHIFT)) ? 1.0f : 10.0f;
+            }
+            if(input_key_state(GLFW_KEY_UP))
+            {
+                g_image.y += (input_key_state_mod(GLFW_KEY_UP, INPUT_MOD_SHIFT)) ? 1.0f : 10.0f;
+            }
+            if(input_key_state(GLFW_KEY_DOWN))
+            {
+                g_image.y -= (input_key_state_mod(GLFW_KEY_DOWN, INPUT_MOD_SHIFT)) ? 1.0f : 10.0f;
+            }
         }
     }
 
@@ -168,8 +174,16 @@ void render(Hobatch_Context* ctx, int ww, int wh)
         0, (vec2){10, 10}, (vec4){0, 0, 100000, 100000}, (vec4){1,1,1,1});
 }
 
+#if defined(_WIN32) || defined(_WIN64)
+INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+    PSTR lpCmdLine, INT nCmdShow)
+{
+    int argc = 0;
+    PCHAR* argv = CommandLineToArgvA(GetCommandLineA(), &argc);
+#else
 int main(int argc, char** argv)
 {
+#endif
 	if(glfwInit() == -1) {
         printf("Error: glfw could not initialize\n");
         return -1;
