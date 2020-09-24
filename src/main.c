@@ -247,6 +247,10 @@ int main(int argc, char** argv)
         //printf("Flush count: %d\n", ctx.flush_count);
         ctx.flush_count = 0;
 
+#if defined(__linux__)
+        double st = 16.0 * 1000.0 - (os_time_us() - start);
+        if(st > 0.0) os_usleep(st);
+#endif
         //printf("Frame took %f ms\n", (os_time_us() - start)/1000.0);
 
         glfwSwapBuffers(window);

@@ -1,19 +1,21 @@
 #include <time.h>
+#include <stdlib.h>
+#include <stdint.h>
 
 #if defined(__linux__)
 #include <unistd.h>
 
-void os_usleep(u64 microseconds)
+void os_usleep(uint64_t microseconds)
 {
 	usleep(microseconds);
 }
 
-r64 os_time_us()
+double os_time_us()
 {
 	struct timespec t_spec;
 	clock_gettime(CLOCK_MONOTONIC_RAW, &t_spec);
-	u64 res = t_spec.tv_nsec + 1000000000 * t_spec.tv_sec;
-	return (r64)res / 1000.0;
+	uint64_t res = t_spec.tv_nsec + 1000000000 * t_spec.tv_sec;
+	return (double)res / 1000.0;
 }
 #else
 #include <windows.h>

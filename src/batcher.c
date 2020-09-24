@@ -217,7 +217,7 @@ batch_render_quad(Hobatch_Context* ctx, vec3 position,
     r32 width, r32 height, u32 texture_id, vec4 clipping,
     r32 blend_factor[4], vec4 color[4], vec2 texcoords[4], r32 red_alpha_override)
 {
-    if(((char*)ctx->qmem_ptr - ctx->qmem) >= BATCH_SIZE * sizeof(Hobatch_Vertex))
+    if(((char*)ctx->qmem_ptr - (char*)ctx->qmem) >= BATCH_SIZE * sizeof(Hobatch_Vertex))
     {
         batch_flush(ctx);
     }
